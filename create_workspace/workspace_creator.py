@@ -4,8 +4,7 @@ class WorkspaceCreator:
     def __init__(self, base_folder: str):
         self.base = base_folder.strip()
         if not self.base:
-            self.base = input("Enter the base folder name: ")
-            # raise ValueError("Base folder name cannot be empty!")
+            raise ValueError("Base folder name cannot be empty!")
         # Ensure the base folder exists
         os.makedirs(self.base, exist_ok=True)
 
@@ -143,9 +142,3 @@ def main():
 
 if __name__ == "__main__":
     main();
-    # base_folder = input("Enter the base folder name: ")
-    # try:
-    #     creator = WorkspaceCreator(base_folder)
-    #     creator.create_workspace()
-    # except ValueError as e:
-    #     print(e)
