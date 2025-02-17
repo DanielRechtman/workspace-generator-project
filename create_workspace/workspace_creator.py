@@ -19,8 +19,23 @@ class WorkspaceCreator:
             os.path.join(self.base, "app", "static", "style.css"),
             os.path.join(self.base, "requirements.txt")
         ]
+
+        main_content = """
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+"""
+
         for file in files:
             with open(file, "w", encoding="utf-8") as f:
+                if file == "main.py":
+                    f.write(main_content)
                 pass  # Creates an empty file
 
     def write_dockerfile(self):
@@ -59,7 +74,16 @@ services:
     build: .
     ports:
       - "8000:80"
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
 """
+
         with open(os.path.join(self.base, "docker-compose.yml"), "w", encoding="utf-8") as f:
             f.write(docker_compose_content)
 
