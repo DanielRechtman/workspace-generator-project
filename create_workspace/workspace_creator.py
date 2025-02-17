@@ -1,5 +1,5 @@
 import os
-
+import click 
 class WorkspaceCreator:
     def __init__(self, base_folder: str):
         self.base = base_folder.strip()
@@ -9,12 +9,12 @@ class WorkspaceCreator:
         os.makedirs(self.base, exist_ok=True)
 
     def create_directories(self):
-        print("Creating directories...")
+        click.echo("Creating directories...",color=True)
         os.makedirs(os.path.join(self.base, "app", "templates"), exist_ok=True)
         os.makedirs(os.path.join(self.base, "app", "static"), exist_ok=True)
 
     def create_files(self):
-        print("Creating empty project files...")
+        click.echo("Creating empty project files...")
         files = [
             os.path.join(self.base, "app", "__init__.py"),
             os.path.join(self.base, "app", "main.py"),
@@ -27,7 +27,7 @@ class WorkspaceCreator:
                 pass  # Creates an empty file
 
     def write_dockerfile(self):
-        print("Writing Dockerfile...")
+        click.echo("Writing Dockerfile...")
         dockerfile_content = """# Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
@@ -54,7 +54,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
             f.write(dockerfile_content)
 
     def write_docker_compose(self):
-        print("Writing docker-compose.yml...")
+        click.echo("Writing docker-compose.yml...")
         docker_compose_content = """version: "3.8"
 
 services:
@@ -67,7 +67,7 @@ services:
             f.write(docker_compose_content)
 
     def write_readme(self):
-        print("Writing README.md...")
+        click.echo("Writing README.md...")
 
         project_structure = (
     "```\n"
@@ -128,17 +128,14 @@ This project is a minimal starter template that integrates FastAPI with HTMX for
         self.write_dockerfile()
         self.write_docker_compose()
         self.write_readme()
-        print(f"Workspace '{self.base}' has been created with the required structure, starter files, Docker configuration, and README documentation.")
+        click.echo(f"Workspace '{self.base}' has been created with the required structure, starter files, Docker configuration, and README documentation.")
 
     
-   
-def main():
-        base_folder = input("Enter the base folder name: ")
-        try:
-            creator = WorkspaceCreator(base_folder)
-            creator.create_workspace()
-        except ValueError as e:
-            print(e)
+@click.command()
+@click.argument("base_folder")
+def main(base_folder):
+        creator = WorkspaceCreator(base_folder)
+        creator.create_workspace()
 
 if __name__ == "__main__":
     main();

@@ -14,7 +14,7 @@ pip install .
 After installation, run the tool from your command line:
 
 ```bash
-create-workspace
+create-workspace FilePath
 ```
 
 You will be prompted to enter a base folder name. The tool will then create a workspace with the following structure:
