@@ -1,13 +1,10 @@
 import os
 import click 
 class WorkspaceCreator:
-    def __init__(self, base_folder: str):
-        self.base = base_folder.strip()
-        if not self.base:
-            raise ValueError("Base folder name cannot be empty!")
-        # Ensure the base folder exists
-        os.makedirs(self.base, exist_ok=True)
-
+    def __init__(self):
+        self.created = False
+        
+        
     def create_directories(self):
         click.echo("Creating directories...",color=True)
         os.makedirs(os.path.join(self.base, "app", "templates"), exist_ok=True)
@@ -122,20 +119,47 @@ This project is a minimal starter template that integrates FastAPI with HTMX for
         with open(os.path.join(self.base, "README.md"), "w", encoding="utf-8") as f:
             f.write(readme_content)
 
-    def create_workspace(self):
+    def create_workspace(self, base):
+        if not base:
+            raise ValueError("Base folder name cannot be empty!")
+        self.base = base
+
+        # Ensure the base folder exists
+        os.makedirs(self.base, exist_ok=True)
+
+
+
         self.create_directories()
         self.create_files()
         self.write_dockerfile()
         self.write_docker_compose()
         self.write_readme()
         click.echo(f"Workspace '{self.base}' has been created with the required structure, starter files, Docker configuration, and README documentation.")
+        self.created=True
 
     
-@click.command()
+@click.group()
+@click.option('--config', default='default config', help='Configuration for the application.')
+@click.pass_context
+def cli(context,config):
+        creator = WorkspaceCreator()
+        # creator.create_workspace()
+
+        # Create and store the app instance in the context
+        context.ensure_object(dict)
+        context.obj['APP'] = creator
+
+
+@cli.command()
+@click.pass_context
 @click.argument("base_folder")
-def main(base_folder):
-        creator = WorkspaceCreator(base_folder)
-        creator.create_workspace()
+def create_workspace(context,base_folder):
+    if (not base_folder):
+        raise ValueError("Base folder name cannot be empty!")
+    app:WorkspaceCreator = context.obj['APP']
+    app.create_workspace(base_folder)
+
+
 
 if __name__ == "__main__":
-    main();
+    cli(obj={});
